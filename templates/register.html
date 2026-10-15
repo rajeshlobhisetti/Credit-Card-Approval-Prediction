@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account &mdash; CreditPulse AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-5 col-xl-4">
+        
+        <div class="glass-card p-4 p-sm-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon-wrapper mx-auto mb-3" style="width: 52px; height: 52px; font-size: 1.5rem;">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">Create an Account</h3>
+                <p class="text-secondary small mb-0">Join the credit underwriting risk evaluation platform</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="name@company.com" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100 py-3 fw-bold mb-3">
+                    <i class="bi bi-person-check-fill me-1"></i> Register Account
+                </button>
+            </form>
+
+            <div class="text-center mt-3 pt-3 border-top small text-muted">
+                Already registered? <a href="{{ url_for('auth.login') }}" class="fw-semibold text-primary text-decoration-none">Sign in here</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

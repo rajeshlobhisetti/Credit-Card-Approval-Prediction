@@ -7,23 +7,29 @@ __pycache__/
 env/
 venv/
 ENV/
+build/
+dist/
 
-# Byte-compiled / optimized / DLL files
-*.pyc
+# Flask
+instance/
+.webassets-cache
 
-# Submodule backup
-.git_submodule_backup/
-
-# Large archive files
-archive.zip
-*.tar.gz
+# Environment variables
+.env
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+
+# Large archive files (raw uncompressed dataset)
+archive.zip

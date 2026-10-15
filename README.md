@@ -2,23 +2,24 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Flask 3.0](https://img.shields.io/badge/framework-Flask%203.0-green.svg)](https://flask.palletsprojects.com/)
+[![Vercel Deployment](https://img.shields.io/badge/deploy-Vercel%20Serverless-black.svg?logo=vercel)](https://vercel.com/)
 [![scikit-learn](https://img.shields.io/badge/ML-scikit--learn%20%7C%20XGBoost-orange.svg)](https://scikit-learn.org/)
 [![Database SQLite](https://img.shields.io/badge/database-SQLite%20%7C%20SQLAlchemy-lightgrey.svg)](https://www.sqlite.org/)
 [![Accuracy 99.5%](https://img.shields.io/badge/model%20accuracy-99.50%25-brightgreen.svg)]()
 
-An end-to-end machine learning-powered credit card approval and risk assessment platform built with Flask, SQLAlchemy, scikit-learn, and XGBoost. Developed for the **SmartBridge / IBM SkillsBuild** Artificial Intelligence project.
+An end-to-end machine learning-powered credit card approval and risk assessment platform built with Flask, SQLAlchemy, scikit-learn, and XGBoost. Fully configured for **instant Vercel Serverless deployment** and local execution.
 
 ---
 
 ## 🌟 Key Features
 
-- **Automated Credit Decision Engine**: Real-time evaluation of applicants across socio-economic, employment, and historical repayment signals in &lt;15ms.
-- **Multi-Model Benchmark Suite**: Compares Logistic Regression, Random Forest, and XGBoost classifiers; automatically deploys the champion model.
+- **Automated Credit Decision Engine**: Evaluates applicant socio-economic, employment, and historical repayment signals in &lt;15ms.
+- **Multi-Model Benchmark Suite**: Compares Logistic Regression, Random Forest, and XGBoost classifiers; automatically deploys the champion model:
   - **Logistic Regression**: 96.50% Test Accuracy
   - **Random Forest**: 99.17% Test Accuracy
   - **XGBoost Classifier**: **99.50% Test Accuracy** (*Active Production Model*)
 - **Granular Risk Categorization**: Classifies applications into **Low Risk**, **Medium Risk**, and **High Risk** tiers with calibrated confidence scores and underwriting limit recommendations.
-- **Full Relational Persistence**: Complete SQLite database (`credit_approval.db`) with SQLAlchemy ORM tracking:
+- **Full Relational Persistence**: Complete SQLite database (`credit_approval.db`) with SQLAlchemy ORM and automatic `/tmp` fallback for Vercel serverless environments:
   - User accounts and authentication
   - Applicant socio-demographic details
   - Credit repayment histories
@@ -36,59 +37,71 @@ An end-to-end machine learning-powered credit card approval and risk assessment 
 ## 📁 Repository Structure
 
 ```
-├── Demo Videos/                       # Project demonstration video recordings
-├── Documents/                         # Academic and project design phase deliverables
-│   ├── 1. Ideation Phase/
-│   ├── 2. Requirement Analysis/
-│   ├── 3. Project Design Phase/
-│   ├── 4. Project Planning Phase/
-│   ├── 5. Project Development Phase/
-│   └── 6. Project Documentation/
-├── Project files/smartbridge/         # Core application source code
-│   ├── app/                           # Flask application factory, blueprints, and routes
-│   │   ├── __init__.py
-│   │   ├── auth.py                    # User authentication routes (login, register, logout)
-│   │   └── routes.py                  # Assessment, dashboard, history, and training routes
-│   ├── config/
-│   │   └── database.py                # Database engine & session configuration
-│   ├── database/
-│   │   └── models.py                  # SQLAlchemy ORM schemas (Users, Applicants, Predictions)
-│   ├── data/
-│   │   └── credit_approval_dataset.csv # 3,000-sample balanced benchmark dataset
-│   ├── models/                        # ML pipeline & serializations
-│   │   ├── preprocessing.py           # Feature engineering and encoding
-│   │   ├── train_models.py            # Model training & cross-validation
-│   │   ├── best_model.pkl             # Trained champion model artifact
-│   │   ├── scaler.pkl                 # Fitted numerical scaler
-│   │   ├── label_encoders.pkl         # Fitted categorical encoders
-│   │   └── feature_columns.pkl        # Expected feature vector alignment
-│   ├── templates/                     # Modern Jinja2 HTML templates
-│   │   ├── base.html                  # Layout with navigation bar & footer
-│   │   ├── index.html                 # Enterprise FinTech landing page
-│   │   ├── predict.html               # Credit evaluation form with test presets
-│   │   ├── result.html                # Executive underwriting decision memo
-│   │   ├── dashboard.html             # Real-time analytics dashboard with Chart.js
-│   │   ├── history.html               # Audit trail table with filters & CSV export
-│   │   ├── train.html                 # Model Studio for retraining & comparisons
-│   │   ├── login.html                 # Sign-in page with 1-click demo button
-│   │   └── register.html              # Account creation page
-│   ├── app.py                         # Application entrypoint
-│   ├── credit_approval.db             # SQLite persistent database
-│   ├── init_demo_data.py              # Database seeder script
-│   ├── test_app.py                    # Automated test suite (all endpoints)
-│   ├── verify_test_cases.py           # Verification script for 10 test scenarios
-│   └── requirements.txt               # Python package dependencies
+├── api/
+│   └── index.py                       # Vercel Serverless Function entrypoint
+├── app/                               # Flask application factory, blueprints, and routes
+│   ├── __init__.py
+│   ├── auth.py                        # User authentication routes (login, register, logout)
+│   └── routes.py                      # Assessment, dashboard, history, and training routes
+├── config/
+│   └── database.py                    # Database engine & session configuration (with Vercel /tmp fallback)
+├── database/
+│   └── models.py                      # SQLAlchemy ORM schemas (Users, Applicants, Predictions)
+├── data/
+│   └── credit_approval_dataset.csv     # 3,000-sample balanced benchmark dataset
+├── models/                            # ML pipeline & serializations
+│   ├── preprocessing.py               # Feature engineering and encoding
+│   ├── train_models.py                # Model training & cross-validation
+│   ├── best_model.pkl                 # Trained champion model artifact
+│   ├── scaler.pkl                     # Fitted numerical scaler
+│   ├── label_encoders.pkl             # Fitted categorical encoders
+│   └── feature_columns.pkl            # Expected feature vector alignment
+├── templates/                         # Modern Jinja2 HTML templates
+│   ├── base.html                      # Layout with navigation bar & footer
+│   ├── index.html                     # Enterprise FinTech landing page
+│   ├── predict.html                   # Credit evaluation form with test presets
+│   ├── result.html                    # Executive underwriting decision memo
+│   ├── dashboard.html                 # Real-time analytics dashboard with Chart.js
+│   ├── history.html                   # Audit trail table with filters & CSV export
+│   ├── train.html                     # Model Studio for retraining & comparisons
+│   ├── login.html                     # Sign-in page with 1-click demo button
+│   └── register.html                  # Account creation page
+├── app.py                             # Local development entrypoint
+├── credit_approval.db                 # SQLite persistent database
+├── init_demo_data.py                  # Database seeder script
+├── test_app.py                        # Automated test suite (all endpoints)
+├── verify_test_cases.py               # Verification script for 10 test scenarios
+├── requirements.txt                   # Python package dependencies
+├── vercel.json                        # Vercel deployment configuration
 └── README.md                          # Repository documentation
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## ☁️ Deploy to Vercel (1-Click Ready)
+
+The repository is pre-configured with `vercel.json` and `api/index.py`:
+
+1. **Import to Vercel**:
+   - Go to [vercel.com](https://vercel.com/) and click **"Add New Project"** &rarr; **"Import Git Repository"**.
+   - Select `https://github.com/rajeshlobhisetti/Credit-Card-Approval-Prediction`.
+
+2. **Project Settings**:
+   - **Framework Preset**: `Other`
+   - **Root Directory**: `./` *(leave default root)*
+   - **Build & Development Settings**: Leave default (Vercel uses `vercel.json` and `requirements.txt`).
+
+3. **Deploy**:
+   - Click **Deploy**. Vercel will install dependencies and serve the serverless application with a free `.vercel.app` URL!
+
+---
+
+## 💻 Local Development Setup
 
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/rajeshlobhisetti/Credit-Card-Approval-Prediction.git
-cd "Credit-Card-Approval-Prediction/Project files/smartbridge"
+cd Credit-Card-Approval-Prediction
 ```
 
 ### 2. Set Up Virtual Environment & Dependencies
@@ -111,14 +124,13 @@ python init_demo_data.py
 ```bash
 python app.py
 ```
-Open your browser and navigate to:
-**[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+Open your browser and navigate to: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ---
 
-## 🔑 Default Demo Credentials
+## 🔑 Default Reviewer Credentials
 
-For convenience, you can sign in directly using:
+Sign in directly using:
 - **Email**: `admin@creditapproval.ai` *(or `rajeshlobhisetti@gmail.com`)*
 - **Password**: `Admin@123`
 - *(Or click the **"Fill Demo Admin Credentials"** button on the login screen)*
