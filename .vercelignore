@@ -1,0 +1,34 @@
+# Python byte-code and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Large binaries, images, documents not needed at runtime
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.docx
+*.mp4
+*.zip
+*.log
+
+# Git and dev metadata
+.git/
+.gitignore
+.github/
+
+# Development / verification scripts
+verify_test_cases.py
+download_and_train.py
+test_app.py
+TEST_CASES.md
+Portfolio_Build_Prompt.md
+Procfile
+runtime.txt

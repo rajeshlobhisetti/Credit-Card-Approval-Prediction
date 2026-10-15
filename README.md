@@ -80,7 +80,7 @@ An end-to-end machine learning-powered credit card approval and risk assessment 
 
 ## ☁️ Deploy to Vercel (1-Click Ready)
 
-The repository is pre-configured with `vercel.json` and `api/index.py`:
+The repository is pre-configured with `vercel.json`, `api/index.py`, and a fine-tuned `.vercelignore` to stay safely within Vercel's 500 MB serverless function limit:
 
 1. **Import to Vercel**:
    - Go to [vercel.com](https://vercel.com/) and click **"Add New Project"** &rarr; **"Import Git Repository"**.
@@ -92,7 +92,10 @@ The repository is pre-configured with `vercel.json` and `api/index.py`:
    - **Build & Development Settings**: Leave default (Vercel uses `vercel.json` and `requirements.txt`).
 
 3. **Deploy**:
-   - Click **Deploy**. Vercel will install dependencies and serve the serverless application with a free `.vercel.app` URL!
+   - Click **Deploy**. Vercel will build the serverless application and provide your live `.vercel.app` URL!
+
+> [!TIP]
+> If your Vercel project ever requires larger builds in the future, you can optionally enable Vercel's Large Functions (up to 5 GB) by adding `VERCEL_SUPPORT_LARGE_FUNCTIONS=1` in your Vercel Project Settings &rarr; Environment Variables.
 
 ---
 

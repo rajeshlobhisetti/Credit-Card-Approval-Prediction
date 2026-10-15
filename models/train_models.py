@@ -2,7 +2,11 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+try:
+    from xgboost import XGBClassifier
+    HAS_XGBOOST = True
+except ImportError:
+    HAS_XGBOOST = False
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import pickle
 import os
@@ -33,6 +37,9 @@ class ModelTrainer:
     
     def train_xgboost(self, X_train, y_train):
         """Train XGBoost model"""
+        if not HAS_XGBOOST:
+            print("XGBoost is not installed. Skipping XGBoost.")
+            return None
         model = XGBClassifier(n_estimators=100, random_state=42, eval_metric='logloss')
         model.fit(X_train, y_train)
         self.models['XGBoost'] = model
@@ -46,10 +53,11 @@ class ModelTrainer:
         print("Training Random Forest...")
         self.train_random_forest(X_train, y_train)
         
-        print("Training XGBoost...")
-        self.train_xgboost(X_train, y_train)
+        if HAS_XGBOOST:
+            print("Training XGBoost...")
+            self.train_xgboost(X_train, y_train)
         
-        print("All models trained successfully!")
+        print("Models trained successfully!")
     
     def evaluate_model(self, model, X_test, y_test):
         """Evaluate a single model"""
