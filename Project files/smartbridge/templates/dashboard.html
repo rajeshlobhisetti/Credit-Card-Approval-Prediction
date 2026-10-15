@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Executive Analytics Dashboard &mdash; CreditPulse AI{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-12 d-flex flex-wrap align-items-center justify-content-between">
+        <div>
+            <h2 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Executive Underwriting Dashboard</h2>
+            <p class="text-secondary mb-0">Real-time credit risk analytics, model health indicators, and application metrics.</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('main.predict') }}" class="btn btn-gradient d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle-fill"></i> New Assessment
+            </a>
+            <a href="{{ url_for('main.history_export') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2" style="background: white; border-radius: 10px;">
+                <i class="bi bi-download"></i> Export CSV
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 4 Key Metric KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Total Applications</div>
+                    <div class="fs-2 fw-extrabold text-dark mt-1">{{ total_predictions }}</div>
+                    <div class="small text-muted mt-2"><i class="bi bi-database text-primary me-1"></i> Recorded in database</div>
+                </div>
+                <div class="kpi-icon bg-primary-subtle text-primary">
+                    <i class="bi bi-file-earmark-person"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card h-100" style="--card-border: #a7f3d0;">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Approved Applications</div>
+                    <div class="fs-2 fw-extrabold text-success mt-1">{{ approved_count }}</div>
+                    <div class="small text-success fw-semibold mt-2"><i class="bi bi-arrow-up-right me-1"></i> {{ approval_rate }} Approval Rate</div>
+                </div>
+                <div class="kpi-icon bg-success-subtle text-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Declined Applications</div>
+                    <div class="fs-2 fw-extrabold text-danger mt-1">{{ rejected_count }}</div>
+                    <div class="small text-danger fw-semibold mt-2"><i class="bi bi-shield-x me-1"></i> {{ rejection_rate }} Rejection Rate</div>
+                </div>
+                <div class="kpi-icon bg-danger-subtle text-danger">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Avg Model Confidence</div>
+                    <div class="fs-2 fw-extrabold text-primary mt-1">{{ avg_confidence }}</div>
+                    <div class="small text-muted mt-2"><i class="bi bi-cpu text-info me-1"></i> High inference reliability</div>
+                </div>
+                <div class="kpi-icon bg-info-subtle text-info">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-4 mb-4">
+    <!-- Chart 1: Outcome Breakdown -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-pie-chart text-primary me-2"></i>Decision Outcomes</h6>
+                <span class="badge bg-light text-secondary border">Real-Time</span>
+            </div>
+            <div style="position: relative; height: 240px;" class="d-flex align-items-center justify-content-center">
+                <canvas id="outcomesChart"></canvas>
+            </div>
+            <div class="d-flex justify-content-around text-center small mt-3 pt-3 border-top">
+                <div>
+                    <div class="text-success fw-bold fs-6">{{ approved_count }}</div>
+                    <div class="text-muted">Approved</div>
+                </div>
+                <div>
+                    <div class="text-danger fw-bold fs-6">{{ rejected_count }}</div>
+                    <div class="text-muted">Declined</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Risk Profile Distribution -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-steps text-warning me-2"></i>Risk Tier Categorization</h6>
+                <span class="badge bg-light text-secondary border">Audited</span>
+            </div>
+            <div style="position: relative; height: 240px;">
+                <canvas id="riskChart"></canvas>
+            </div>
+            <div class="text-center text-muted small mt-3 pt-3 border-top">
+                Risk grades categorized via multi-dimensional default probability
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Applicant Demographics -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-people-fill text-info me-2"></i>Applicant Income Demographics</h6>
+                <span class="badge bg-light text-secondary border">Distribution</span>
+            </div>
+            <div style="position: relative; height: 240px;">
+                <canvas id="incomeChart"></canvas>
+            </div>
+            <div class="text-center text-muted small mt-3 pt-3 border-top">
+                Categorical distribution across employment types
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Model & Recent Activity Stream -->
+<div class="row g-4 mb-4">
+    <!-- Active Model Details -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-cpu-fill text-primary me-2"></i>Active Production Model</h6>
+                <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i> Serving</span>
+            </div>
+
+            <div class="card bg-light border-0 p-3 rounded-4 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Champion Algorithm:</span>
+                    <span class="fw-bold text-dark">{{ model_info.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Scikit/XGB Class:</span>
+                    <span class="fw-mono small text-secondary">{{ model_info.type }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Benchmark Accuracy:</span>
+                    <span class="fw-bold text-success">{{ model_info.accuracy }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">Deployment Date:</span>
+                    <span class="small text-muted">{{ model_info.trained_date }}</span>
+                </div>
+            </div>
+
+            <p class="text-muted small mb-4">
+                The active model is loaded in memory for low-latency batch and real-time inference. You can retrain or benchmark against alternative models at any time.
+            </p>
+
+            <a href="{{ url_for('main.train_page') }}" class="btn btn-outline-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="border-radius: 10px;">
+                <i class="bi bi-sliders"></i> Open Model Training Studio
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-secondary me-2"></i>Recent Underwriting Decisions</h6>
+                <a href="{{ url_for('main.history') }}" class="small fw-semibold text-primary text-decoration-none">
+                    View Complete Audit Trail <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small text-uppercase">
+                        <tr>
+                            <th>Ref</th>
+                            <th>Applicant</th>
+                            <th>Decision</th>
+                            <th>Risk Tier</th>
+                            <th>Confidence</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in recent_activity %}
+                        <tr>
+                            <td><span class="fw-bold text-dark">#{{ item.id }}</span></td>
+                            <td>
+                                <div class="fw-semibold">{{ item.income_type }}</div>
+                                <div class="text-muted small">{{ item.education }}</div>
+                            </td>
+                            <td>
+                                {% if item.result == 'Approved' %}
+                                    <span class="badge-approved small"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                                {% else %}
+                                    <span class="badge-rejected small"><i class="bi bi-x-circle me-1"></i>Declined</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.risk == 'Low Risk' %}
+                                    <span class="badge-low-risk small">Low Risk</span>
+                                {% elif item.risk == 'Medium Risk' %}
+                                    <span class="badge-med-risk small">Medium Risk</span>
+                                {% else %}
+                                    <span class="badge-high-risk small">High Risk</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="fw-semibold text-primary">{{ item.confidence }}</span></td>
+                            <td><span class="text-muted small">{{ item.date }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                No applications evaluated yet. <a href="{{ url_for('main.predict') }}">Run your first assessment!</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const chartData = {{ chart_data_json|safe }};
+
+// 1. Outcomes Doughnut Chart
+new Chart(document.getElementById('outcomesChart'), {
+    type: 'doughnut',
+    data: {
+        labels: chartData.outcomes.labels,
+        datasets: [{
+            data: chartData.outcomes.data,
+            backgroundColor: ['#10b981', '#ef4444'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' }
+        },
+        cutout: '70%'
+    }
+});
+
+// 2. Risk Profile Bar Chart
+new Chart(document.getElementById('riskChart'), {
+    type: 'bar',
+    data: {
+        labels: chartData.risks.labels,
+        datasets: [{
+            label: 'Applications',
+            data: chartData.risks.data,
+            backgroundColor: ['#16a34a', '#f59e0b', '#dc2626'],
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// 3. Income Demographics Horizontal Bar Chart
+new Chart(document.getElementById('incomeChart'), {
+    type: 'bar',
+    data: {
+        labels: chartData.income.labels,
+        datasets: [{
+            label: 'Applicants',
+            data: chartData.income.data,
+            backgroundColor: '#6366f1',
+            borderRadius: 6
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endblock %}
